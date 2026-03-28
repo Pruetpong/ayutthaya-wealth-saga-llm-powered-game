@@ -881,7 +881,7 @@ class QuestCompleteRequest(BaseModel):
 @app.get("/")
 async def index(request: Request):
     """Serve the main game page"""
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html")
 
 @app.get("/api/init")
 async def get_init_data():
