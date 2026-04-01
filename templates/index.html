@@ -1661,9 +1661,10 @@
                     bannerBtn.style.opacity = remaining === 0 ? '0.5' : '1';
                 }
 
-                // Update Modal Badge
+                // Update Modal Badge — เฉพาะเมื่ออยู่ใน Horathibodi mode เท่านั้น
+                // (ป้องกัน nextRound() ทำให้ badge หลุดออกจาก hidden state)
                 const modalBadge = document.getElementById('horathibodi-modal-chat-badge');
-                if (modalBadge) {
+                if (modalBadge && this.isHorathibodiMode) {
                     modalBadge.innerText = `เหลือ ${remaining}/3 ครั้ง`;
                     modalBadge.className = remaining === 0
                         ? 'text-xs px-2 py-1 rounded bg-red-100 text-red-700 font-bold mr-2'
@@ -2134,6 +2135,10 @@
                         this.state.active_quest = data.active_quest;
                         this.state.quest_turn_count = 0;
                         this.state.quest_chat_history = [];
+                        // ล้าง chat history ของ NPC เพื่อให้ quest_greeting แสดงเมื่อเปิด location ครั้งถัดไป
+                        if (quest && quest.npc_id) {
+                            this.chatHistories[quest.npc_id] = [];
+                        }
                         this.updateStatsUI();
                         this.renderMap();
                         this.closeModal('modal-quest-hub');
