@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, Any
 import httpx
 import os
 from dotenv import load_dotenv
@@ -780,7 +780,7 @@ RANKS = [
 
 # Wisdom Gate: ค่า Wisdom ขั้นต่ำที่ต้องมีก่อนจบแต่ละรอบ (index 0 = round 1)
 WISDOM_GATE = [20, 30, 40, 50, 60]
-WISDOM_GATE_BEGINNER = [15, 25, 35]  # โหมดวิถีพ่อค้ามือใหม่ (3 รอบ)
+WISDOM_GATE_BEGINNER = [10, 20, 25]  # โหมดวิถีพ่อค้ามือใหม่ (3 รอบ)
 
 def calculate_rank(stats: dict) -> dict:
     """Calculate player rank based on final stats (4 pillars) — multi-criteria"""
