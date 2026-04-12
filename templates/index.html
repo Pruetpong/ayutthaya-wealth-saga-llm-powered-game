@@ -1357,7 +1357,7 @@
                 quest_turn_count: 0,
                 horathibodi_chat_count: 0
             },
-            data: { locations: {}, npcs: {}, scenarios: [], quests: {}, wisdomGate: [], wisdomGateNormal: [], wisdomGateBeginner: [] },
+            data: { locations: {}, npcs: {}, scenarios: [], quests: {}, wisdomGate: [] },
             chatHistories: {},
             currentInvestments: {},
             currentLocId: null,
@@ -1405,9 +1405,7 @@
                     this.data.locations = data.locations;
                     this.data.npcs = data.npcs;
                     this.data.quests = data.quests || {};
-                    this.data.wisdomGateNormal   = data.wisdom_gate          || [20, 30, 40, 50, 60];
-                    this.data.wisdomGateBeginner = data.wisdom_gate_beginner || [15, 25, 35];
-                    this.data.wisdomGate = this.data.wisdomGateNormal; // default ก่อน startGame
+                    this.data.wisdomGate = data.wisdom_gate || [15, 25, 35, 45, 55];
 
                     this.renderScenarios();
                     document.getElementById('loading-screen').classList.add('hidden');
@@ -1438,68 +1436,23 @@
             // --- View 1: Selection ---
             renderScenarios: function () {
                 const container = document.getElementById('scenario-container');
-                const beginner = this.data.scenarios.filter(s => s.mode === 'beginner');
-                const normal   = this.data.scenarios.filter(s => s.mode === 'normal');
-
-                const renderCard = (s) => `
+                container.innerHTML = this.data.scenarios.map(s => `
                     <div onclick="game.startGame('${s.id}')" class="group ancient-border p-5 cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl relative overflow-hidden" style="background: linear-gradient(to bottom right, #fffaf0, #fff5e6);">
                         <div class="absolute top-0 right-0 p-10 rounded-full blur-2xl transition" style="background: rgba(212,175,55,0.05);"></div>
                         <h3 class="text-xl font-bold ancient-font mb-2" style="color: var(--ayu-red);">${s.name}</h3>
                         <p class="text-sm font-serif leading-relaxed mb-4" style="color: var(--ayu-gold-dim);">${s.desc}</p>
                         <span class="text-xs px-2 py-1 rounded transition" style="color: var(--ayu-red); background: rgba(212,175,55,0.15); border: 1px solid rgba(212,175,55,0.4);">เลือกเส้นทางนี้</span>
                     </div>
-                `;
-
-                container.innerHTML = `
-                    <!-- Section: วิถีพ่อค้ามือใหม่ -->
-                    <div class="col-span-full mb-2">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-seedling text-2xl" style="color: var(--ayu-gold);"></i>
-                            <div>
-                                <h2 class="text-xl font-bold ancient-font" style="color: var(--ayu-red);">วิถีพ่อค้ามือใหม่</h2>
-                                <p class="text-base" style="color: var(--ayu-gold-dim);">3 ปี - สำหรับผู้เริ่มต้น - เรียนรู้แนวคิดพื้นฐานของการลงทุน</p>
-                            </div>
-                        </div>
-                        <div class="mt-2 h-px w-full" style="background: linear-gradient(to right, var(--ayu-gold), transparent);"></div>
-                    </div>
-                    ${beginner.map(renderCard).join('')}
-
-                    <!-- Divider -->
-                    <div class="col-span-full my-4 flex items-center gap-4">
-                        <div class="flex-1 h-px" style="background: rgba(212,175,55,0.3);"></div>
-                        <i class="fas fa-vihara text-xl" style="color: var(--ayu-gold-dim);"></i>
-                        <div class="flex-1 h-px" style="background: rgba(212,175,55,0.3);"></div>
-                    </div>
-
-                    <!-- Section: ศึกตำนานเจ้าสัว -->
-                    <div class="col-span-full mb-2">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-crown text-2xl" style="color: var(--ayu-gold);"></i>
-                            <div>
-                                <h2 class="text-xl font-bold ancient-font" style="color: var(--ayu-red);">ศึกตำนานเจ้าสัว</h2>
-                                <p class="text-base" style="color: var(--ayu-gold-dim);">5 ปี - ระดับท้าทาย - พิสูจน์ฝีมือพ่อค้าแห่งอยุธยา</p>
-                            </div>
-                        </div>
-                        <div class="mt-2 h-px w-full" style="background: linear-gradient(to right, var(--ayu-gold), transparent);"></div>
-                    </div>
-                    ${normal.map(renderCard).join('')}
-                `;
+                `).join('');
             },
 
             startGame: async function (scenarioId) {
                 this.state.scenario_id = scenarioId;
                 const scenario = this.data.scenarios.find(s => s.id === scenarioId);
 
-                // ตั้งค่า max_rounds และ wisdomGate ตามโหมดของ scenario ที่เลือก
-                this.state.max_rounds = scenario.max_rounds || 5;
-                this.data.wisdomGate  = scenario.mode === 'beginner'
-                    ? this.data.wisdomGateBeginner
-                    : this.data.wisdomGateNormal;
-
                 document.getElementById('view-selection').classList.add('hidden');
                 document.getElementById('view-game').classList.remove('hidden');
                 document.getElementById('scenario-name').innerText = scenario.name;
-                document.getElementById('max-round-display').innerText = this.state.max_rounds;
 
                 this.updateStatsUI();
                 this.renderMap();
@@ -1661,10 +1614,9 @@
                     bannerBtn.style.opacity = remaining === 0 ? '0.5' : '1';
                 }
 
-                // Update Modal Badge — เฉพาะเมื่ออยู่ใน Horathibodi mode เท่านั้น
-                // (ป้องกัน nextRound() ทำให้ badge หลุดออกจาก hidden state)
+                // Update Modal Badge
                 const modalBadge = document.getElementById('horathibodi-modal-chat-badge');
-                if (modalBadge && this.isHorathibodiMode) {
+                if (modalBadge) {
                     modalBadge.innerText = `เหลือ ${remaining}/3 ครั้ง`;
                     modalBadge.className = remaining === 0
                         ? 'text-xs px-2 py-1 rounded bg-red-100 text-red-700 font-bold mr-2'
@@ -2135,10 +2087,6 @@
                         this.state.active_quest = data.active_quest;
                         this.state.quest_turn_count = 0;
                         this.state.quest_chat_history = [];
-                        // ล้าง chat history ของ NPC เพื่อให้ quest_greeting แสดงเมื่อเปิด location ครั้งถัดไป
-                        if (quest && quest.npc_id) {
-                            this.chatHistories[quest.npc_id] = [];
-                        }
                         this.updateStatsUI();
                         this.renderMap();
                         this.closeModal('modal-quest-hub');
