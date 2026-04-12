@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import List, Dict, Optional, Union, Any
+from typing import List, Dict, Optional, Union
 import httpx
 import os
 from dotenv import load_dotenv
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="Ayutthaya Wealth Saga: The Wisdom of the Realm",
     description="A strategic economic simulation game set in the Ayutthaya Kingdom, where players learn financial wisdom from historical NPCs.",
-    version="6.0.0"
+    version="5.0.0"
 )
 
 # CORS configuration
@@ -742,20 +742,14 @@ EVENTS_MASTER = [
 ]
 
 # Scenarios (Difficulty Levels)
-# mode: "beginner" = 3 rounds, "normal" = 5 rounds
 SCENARIOS = [
-    # --- โหมดวิถีพ่อค้ามือใหม่ (3 รอบ) ---
-    {"id": "starter_a", "name": "พ่อค้ามือใหม่",     "desc": "เรียนรู้ว่าแต่ละย่านตอบสนองต่อเหตุการณ์ต่างกัน — บทเรียนแรกของพ่อค้า",      "schedule": [0, 6, 1], "max_rounds": 3, "mode": "beginner"},
-    {"id": "starter_b", "name": "อย่าวางไข่ในตะกร้าใบเดียว", "desc": "เริ่มต้นดีไม่ได้แปลว่าจบดี — เรียนรู้คุณค่าของการกระจายความเสี่ยง", "schedule": [6, 2, 0], "max_rounds": 3, "mode": "beginner"},
-    {"id": "starter_c", "name": "หมากแห่งชีวิต",     "desc": "เส้นทางที่ปลอดภัยก็มีผลตอบแทน — สายกลางคือภูมิปัญญาของพ่อค้าผู้ชาญฉลาด", "schedule": [1, 5, 6], "max_rounds": 3, "mode": "beginner"},
-    # --- โหมดศึกตำนานเจ้าสัว (5 รอบ) ---
-    {"id": "easy",     "name": "ฟ้าหลังฝน",       "desc": "เริ่มต้นง่าย จบสวย สร้างกำลังใจให้ผู้เล่น",               "schedule": [0, 6, 1, 0, 6], "max_rounds": 5, "mode": "normal"},
-    {"id": "tricky",   "name": "กับดักความโลภ",   "desc": "เปิดมาดีแล้วทุบทีหลัง สอนให้ไม่ประมาท",                  "schedule": [6, 0, 1, 3, 5], "max_rounds": 5, "mode": "normal"},
-    {"id": "hard",     "name": "วิกฤตซ้อนวิกฤต", "desc": "ภัยธรรมชาติและสงคราม สอนบริหารความเสี่ยง",               "schedule": [2, 4, 3, 5, 1], "max_rounds": 5, "mode": "normal"},
-    {"id": "volatile", "name": "รถไฟเหาะ",         "desc": "ขึ้นสุดลงสุด สอนรับมือความผันผวน",                        "schedule": [0, 5, 6, 1, 2], "max_rounds": 5, "mode": "normal"},
-    {"id": "safe",     "name": "เศรษฐกิจพอเพียง", "desc": "สอนให้เห็นค่าของการลงทุนความเสี่ยงต่ำ",                  "schedule": [1, 5, 0, 2, 3], "max_rounds": 5, "mode": "normal"},
-    {"id": "recovery", "name": "ล้มแล้วลุก",       "desc": "เริ่มด้วยวิกฤต แต่จบด้วยความมั่งคั่ง",                   "schedule": [2, 4, 1, 0, 6], "max_rounds": 5, "mode": "normal"},
-    {"id": "expert",   "name": "ยุคทมิฬ",           "desc": "วิกฤตทุกรอบ ทดสอบฝีมือขั้นสูงสุด",                       "schedule": [5, 3, 4, 1, 2], "max_rounds": 5, "mode": "normal"},
+    {"id": "easy", "name": "ฟ้าหลังฝน", "desc": "เริ่มต้นง่าย จบสวย สร้างกำลังใจให้ผู้เล่น", "schedule": [0, 6, 1, 0, 6]},
+    {"id": "tricky", "name": "กับดักความโลภ", "desc": "เปิดมาดีแล้วทุบทีหลัง สอนให้ไม่ประมาท", "schedule": [6, 0, 1, 3, 5]},
+    {"id": "hard", "name": "วิกฤตซ้อนวิกฤต", "desc": "ภัยธรรมชาติและสงคราม สอนบริหารความเสี่ยง", "schedule": [2, 4, 3, 5, 1]},
+    {"id": "volatile", "name": "รถไฟเหาะ", "desc": "ขึ้นสุดลงสุด สอนรับมือความผันผวน", "schedule": [0, 5, 6, 1, 2]},
+    {"id": "safe", "name": "เศรษฐกิจพอเพียง", "desc": "สอนให้เห็นค่าของการลงทุนความเสี่ยงต่ำ", "schedule": [1, 5, 0, 2, 3]},
+    {"id": "recovery", "name": "ล้มแล้วลุก", "desc": "เริ่มด้วยวิกฤต แต่จบด้วยความมั่งคั่ง", "schedule": [2, 4, 1, 0, 6]},
+    {"id": "expert", "name": "ยุคทมิฬ", "desc": "วิกฤตทุกรอบ ทดสอบฝีมือขั้นสูงสุด", "schedule": [5, 3, 4, 1, 2]}
 ]
 
 # Wisdom Hints per Event (keyed by event id)
@@ -780,7 +774,6 @@ RANKS = [
 
 # Wisdom Gate: ค่า Wisdom ขั้นต่ำที่ต้องมีก่อนจบแต่ละรอบ (index 0 = round 1)
 WISDOM_GATE = [20, 30, 40, 50, 60]
-WISDOM_GATE_BEGINNER = [10, 20, 25]  # โหมดวิถีพ่อค้ามือใหม่ (3 รอบ)
 
 def calculate_rank(stats: dict) -> dict:
     """Calculate player rank based on final stats (4 pillars) — multi-criteria"""
@@ -796,28 +789,6 @@ def calculate_rank(stats: dict) -> dict:
     elif wealth >= 150000 and wisdom >= 40 and merit >= 20:
         return RANKS[3]  # เศรษฐี
     elif wealth >= 80000 and wisdom >= 30:
-        return RANKS[2]  # คหบดี
-    else:
-        return RANKS[1]  # ไพร่หลวง
-
-
-def calculate_rank_beginner(stats: dict) -> dict:
-    """Calculate rank for 3-round beginner mode — adjusted thresholds
-    Starting wealth: 100,000 | Max realistic growth in 3 rounds: ~150,000
-    Thresholds scaled proportionally from 5-round mode.
-    """
-    wealth = stats.get("wealth", 0)
-    wisdom = stats.get("wisdom", 0)
-    merit  = stats.get("merit", 0)
-    health = stats.get("health", 0)
-
-    if wealth <= 0:
-        return RANKS[0]  # ทาสในเรือนเบี้ย
-    elif wealth >= 140000 and wisdom >= 35 and merit >= 20 and health >= 40:
-        return RANKS[4]  # เจ้าสัวใหญ่
-    elif wealth >= 115000 and wisdom >= 25 and merit >= 15:
-        return RANKS[3]  # เศรษฐี
-    elif wealth >= 90000 and wisdom >= 20:
         return RANKS[2]  # คหบดี
     else:
         return RANKS[1]  # ไพร่หลวง
@@ -881,7 +852,7 @@ class QuestCompleteRequest(BaseModel):
 @app.get("/")
 async def index(request: Request):
     """Serve the main game page"""
-    return templates.TemplateResponse(request, "index.html")
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/api/init")
 async def get_init_data():
@@ -889,7 +860,6 @@ async def get_init_data():
     return {
         "scenarios": SCENARIOS,
         "wisdom_gate": WISDOM_GATE,
-        "wisdom_gate_beginner": WISDOM_GATE_BEGINNER,
         "locations": LOCATIONS,
         "npcs": {
             k: {
@@ -974,11 +944,10 @@ async def end_turn(request: TurnActionRequest):
     investments = list(request.investments)
     items = state.stats.items
 
-    # Wisdom Gate Validation: เลือก Gate ตามโหมด (3 รอบ vs 5 รอบ)
-    active_wisdom_gate = WISDOM_GATE_BEGINNER if state.max_rounds == 3 else WISDOM_GATE
+    # Wisdom Gate Validation: ตรวจสอบว่า wisdom ถึงขั้นต่ำของรอบนี้หรือไม่
     current_round_index = state.round - 1
-    if current_round_index < len(active_wisdom_gate):
-        required_wisdom = active_wisdom_gate[current_round_index]
+    if current_round_index < len(WISDOM_GATE):
+        required_wisdom = WISDOM_GATE[current_round_index]
         if state.stats.wisdom < required_wisdom:
             raise HTTPException(
                 status_code=400,
@@ -1139,11 +1108,7 @@ async def end_turn(request: TurnActionRequest):
     }
 
     # 9. Calculate Rank if game over
-    # เลือก rank function ตามโหมด
-    if is_game_over:
-        rank = calculate_rank_beginner(new_stats) if state.max_rounds == 3 else calculate_rank(new_stats)
-    else:
-        rank = None
+    rank = calculate_rank(new_stats) if is_game_over else None
 
     # Construct Response
     result = {
